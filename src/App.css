@@ -1,0 +1,300 @@
+* {
+  font-family: Fairfax HD;
+  color: #fff7d6;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;  /* disables page scroll */
+}
+
+.App {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden; /* prevent page scroll */
+  background-color: #1f2637
+}
+
+.body {
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  height: 95%;
+  overflow: hidden; /* prevent page scroll */
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: #1f2637;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+#keyboard-grid {
+  position: fixed;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 0;
+  height: 30%;
+  aspect-ratio: 6 / 4;
+  border: 1.5px solid #fff7d6;
+}
+
+.key {
+  position: relative; /* required for absolute children */
+  font-size: 30px;
+  border: 1.5px solid #fff7d6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+}
+
+.corner-label {
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  font-size: 15px;
+  pointer-events: none; /* optional: prevents interference with clicks */
+}
+
+.space {
+  grid-column: 2 / 6;
+  aspect-ratio: 4;
+}
+
+.radicals {
+  text-decoration: underline;
+  font-size: 50px;
+}
+
+.textline {
+  font-size: 50px;
+  display: block; /* stack by default */
+}
+
+/* For the last .textline, make it inline-block to sit next to span */
+.textline:last-of-type {
+  display: inline-block;
+  vertical-align: middle; /* align nicely with the span */
+}
+
+rt {
+  font-size: 15px;
+}
+
+.pressed {
+  color: #1f2637;
+  background-color: #fff7d6;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.navbar {
+  position: relative;
+  width: 100%;
+  height: 7.5%;
+  display: flex;
+  flex-direction: row;
+  font-size: 30px;
+  margin: 0 0 10px 0;
+}
+
+.pages {
+  flex-direction: row;
+}
+
+.title {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.title > div {
+  font-size: 30px !important;
+}
+
+.settings {
+  flex-direction: row;
+  /* No fixed position */
+  margin-left: auto; /* Push it to the right */
+}
+
+.navbar > div {
+  display: flex;
+  height: 100%;         /* Make direct child (.pages and .settings) fill navbar */
+}
+
+.navbar > div > div {
+  display: flex;
+  align-items: center;
+  padding: 10px 10px;
+  font-size: 20px
+}
+
+.left {
+  width: 25%;
+  height: 100%;
+  padding: 10px;
+  overflow: auto; 
+}
+
+.main {
+  width: 50%;
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.right {
+  width: 25%;
+  height: 100%;
+  padding: 20px
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  text-align: left
+}
+
+.possibility-grid {
+  font-size: 20px;
+}
+
+.lesson-name {
+  border-radius: 10px;
+}
+
+.lesson-grid {
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+  gap: 10px;
+}
+
+.lesson-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px
+}
+
+.lesson-grid > div > div.two-col {
+  grid-template-columns: 1fr 4fr;
+}
+
+.lesson-grid > div > div.two-col > div {
+  padding: 5px;
+}
+
+.comments {
+  font-size: 20px
+}
+
+.question {
+  font-size: 40px
+}
+
+progress {
+  width: 100%;
+  height: 20%;
+  border-radius: 10px;
+}
+
+.typing-container {
+  display: flex;
+  flex-direction: column;
+  height: 40%; /* Or any fixed height if needed */
+  position: relative;
+  overflow: hidden;
+}
+
+.text {
+  flex: 0 
+}
+
+.wpm {
+  flex-shrink: 0;
+  padding: 10px; /* optional for spacing */
+  background: #1f2637; /* ensure background isn't transparent */
+  z-index: 1; /* only necessary if there's overlapping */
+}
+
+.typing-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  row-gap: 25px;
+  font-size: 50px;
+  width: 100%;
+  transition: transform 0.2s ease-out;
+}
+
+.typed {
+  color: #999;
+}
+
+.typing-container::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 6rem;
+  width: 100%;
+  pointer-events: none;
+  background: linear-gradient(to bottom, #1f263700, #1f2637);
+}
+
+.wpm {
+  font-size: 30px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 30px
+}
+
+.wpm > div {
+  display: flex;
+  flex-direction: column
+}
+
+.number {
+  font-size: 50px
+}
+
+.blue {
+  color: #00c6be
+}
