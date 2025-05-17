@@ -62,6 +62,7 @@ function Lessons(props) {
               completed={getProgress(ind)} 
               bgColor={progressColor(getProgress(ind))} 
               customLabel={`󱥻${numbers(Math.floor(getProgress(ind)))}`}
+              height="15px"
             />
           </div>
         ))
@@ -241,6 +242,7 @@ function App() {
   const [wordList, setWordList] = useState([])
   const [index, setIndex] = useState(0)
   const [wpm, setWPM] = useState(0)
+  const [started, setStarted] = useState(false)
   const [start, setStart] = useState(0)
 
   const [fade, setFade] = useState(true)
@@ -285,7 +287,6 @@ function App() {
 
   useEffect(() => {
     if (page === 1) {
-      setStart(performance.now())
       setWordList(prev => {
         let newList = prev || [];
 
@@ -306,6 +307,11 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       setHeldKey(e.key);
+
+      if (!started && page === 1) {
+        setStarted(true)
+        setStart(Date.now())
+      }
 
       if (e.key === "Backspace") {
         if (radicals[page]) {
@@ -390,7 +396,7 @@ function App() {
   }, [textField, page]);
 
   useEffect(() => {
-    const elapsedMinutes = (performance.now() - start) / 60000;
+    const elapsedMinutes = (Date.now() - start) / 60000;
     setWPM(index / elapsedMinutes) 
   }, [index, start])
 
@@ -470,7 +476,7 @@ function App() {
                   </div>
                   <div>
                     󱥫󱦂󱥳󱦛󱤡、︁󱥞󱥠󱤉󱥂
-                    <span className="number">󱥂{numbers(Math.round(wpm))}</span>
+                    <span className="number">󱥂<span className="blue">{numbers(Math.round(wpm))}</span></span>
                   </div>
                 </div>
               )

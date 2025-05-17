@@ -230,12 +230,6 @@ rt {
   font-size: 40px
 }
 
-progress {
-  width: 100%;
-  height: 20%;
-  border-radius: 10px;
-}
-
 .typing-container {
   display: flex;
   flex-direction: column;
@@ -262,6 +256,10 @@ progress {
   font-size: 50px;
   width: 100%;
   transition: transform 0.2s ease-out;
+}
+
+.typing-grid > div {
+  text-align: center
 }
 
 .typed {
