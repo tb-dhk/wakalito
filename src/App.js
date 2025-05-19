@@ -175,7 +175,7 @@ function TypingTest(props) {
 
   useEffect(() => {
     const paddingTop = 100
-    const line = Math.floor((typedIndex + 1) / 5);
+    const line = Math.floor(typedIndex / 5);
     const lineHeight = gridRef.current?.firstChild?.offsetHeight || 0;
     const rowGap = 25
     const containerHeight = gridRef.current?.parentElement?.offsetHeight || 0;
@@ -407,7 +407,7 @@ function App() {
       vari: ruby,
       func: setRuby,
       limit: 2,
-      opt: "󱥄󱥠󱦐󱤡󱦜󱥞󱦝󱦑󱤬󱥚"
+      opt: "󱤴󱥷󱤮󱤉󱥠󱦐󱤡󱦜󱥞󱦝󱦑"
     },
     qwerty: {
       vari: qwerty,
