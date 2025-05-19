@@ -30,16 +30,18 @@ function keysToRads(str) {
 }
 
 function Suggestions(props) {
-  const possible = props.radicals && Object.keys(Object.assign(wakalitoDict, wakalitoDesc))
+  const possible = props.radicals && Object.keys(wakalitoDict)
     .filter(a => a.toLowerCase().startsWith(props.radicals))
     .sort(); // <-- this sorts the keys alphabetically
+
+  const ndict = Object.assign({}, wakalitoDict, wakalitoDesc)
 
   return (
     <div>
       {
         possible && possible.map(a => (
           <div className="possibility-grid two-col" key={a}>
-            <div> {props.ruby ? rubify(wakalitoDict[a]) : wakalitoDict[a]} </div>
+            <div> {props.ruby ? rubify(ndict[a]) : ndict[a]} </div>
             <div> {keysToRads(a)} </div>
           </div>
         ))
@@ -191,7 +193,8 @@ function getProgress(lesson) {
   const lessons = JSON.parse(localStorage.getItem('lessonProgress'))
   const total = lessons[lesson].flat().length
   const sum = lessons[lesson].map((ls, ind) => ls.length * ind).reduce((a, b) => a + b, 0)
-  return sum / total / 3 * 100
+  const progress = sum / total / 3 * 100
+  return (progress === undefined ? 0 : progress)
 }
 
 function progressColor(progress) {
@@ -349,6 +352,7 @@ function App() {
               setTextField(newTextField);
             } else if (character in wakalitoDict) {
               const newTextField = [...textField];
+              console.log(wakalitoDict)
               newTextField[page] += wakalitoDict[character];
               setTextField(newTextField);
 
@@ -459,11 +463,11 @@ function App() {
               page === 1 && (
                 <div className="wpm">
                   <div>
-                    󱤄󱦛󱤡、︁󱥞󱥠󱤉󱥂
+                    󱤄󱤡、︁󱥞󱥠󱤉󱥂
                     <span className="number">󱥂<span className="blue">{numbers(index)}</span></span>
                   </div>
                   <div>
-                    󱥫󱦂󱥳󱦛󱤡、︁󱥞󱥠󱤉󱥂
+                    󱥫󱦂󱥳󱤡、︁󱥞󱥠󱤉󱥂
                     <span className="number">󱥂<span className="blue">{numbers(Math.round(wpm))}</span></span>
                   </div>
                 </div>
@@ -472,6 +476,21 @@ function App() {
           </div>
         </div>
       </Fade>
+      <div className="footer">
+        <div>
+          <a 
+            className="blue" 
+            href="bsky.app/profile/tbdhk.xyz" 
+            style={{textDecoration: "none"}}
+          >󱤑󱦐󱥤󱦜󱥴󱦜󱦑</a>
+          󱤧󱥉󱤉󱥁󱤙󱤿󱥍󱦗󱤟󱥂󱦘󱥧
+          <a 
+            className="blue" 
+            href="https://www.reddit.com/r/tokipona/comments/1kms8gg/a_nonlatin_alphabetical_order_for_sitelen_pona/" 
+            style={{textDecoration: "none"}}
+          >󱥠󱥁</a>
+        </div>
+      </div>
     </div>
   );
 }
