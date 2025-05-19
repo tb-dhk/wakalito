@@ -110,22 +110,9 @@ function Text(props) {
     {props.lines.map((line, idx) => (
       <div className="textline" key={idx}>
       {line}
-      {idx < props.lines.length - 1 && <br />}
+      {idx < props.lines.length - 1 ? <br /> : <span className="radicals" style={{ textDecoration: 'underline' }}>{keysToRads(props.radicals)}</span>}
       </div>
     ))}
-
-    {(props.lines.length === 0 || props.lines[props.lines.length - 1] === '') ? (
-      <>
-      <br />
-      <span className="radicals" style={{ textDecoration: 'underline' }}>
-      {keysToRads(props.radicals)}
-      </span>
-      </>
-    ) : (
-      <span className="radicals" style={{ textDecoration: 'underline' }}>
-      {keysToRads(props.radicals)}
-      </span>
-    )}
     </div>
   )
 }
