@@ -237,6 +237,10 @@ rt {
   font-size: 40px
 }
 
+.text {
+  flex: 0 
+}
+
 .typing-container {
   display: flex;
   flex-direction: column;
@@ -245,18 +249,8 @@ rt {
   overflow: hidden;
 }
 
-.text {
-  flex: 0 
-}
-
-.wpm {
-  flex-shrink: 0;
-  padding: 10px; /* optional for spacing */
-  background: #1f2637; /* ensure background isn't transparent */
-  z-index: 1; /* only necessary if there's overlapping */
-}
-
 .typing-grid {
+  padding-top: 100px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   row-gap: 25px;
@@ -269,18 +263,31 @@ rt {
   text-align: center
 }
 
-.typed {
-  color: #999;
+.typed, .typed > ruby, .typed > ruby > rt {
+  color: #999 !important;
 }
 
+.typing-container::before,
 .typing-container::after {
   content: "";
   position: absolute;
-  bottom: 0;
   left: 0;
-  height: 6rem;
   width: 100%;
   pointer-events: none;
+  z-index: 1; /* ensures it's above content but below interactive elements if needed */
+}
+
+/* Top gradient */
+.typing-container::before {
+  top: 0;
+  height: 6rem;
+  background: linear-gradient(to top, #1f263700, #1f2637);
+}
+
+/* Bottom gradient */
+.typing-container::after {
+  bottom: 0;
+  height: 6rem;
   background: linear-gradient(to bottom, #1f263700, #1f2637);
 }
 

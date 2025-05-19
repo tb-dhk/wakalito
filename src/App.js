@@ -174,17 +174,18 @@ function TypingTest(props) {
   const gridRef = useRef(null);
 
   useEffect(() => {
-    const line = Math.floor(typedIndex / 5);
+    const paddingTop = 100
+    const line = Math.floor((typedIndex + 1) / 5);
     const lineHeight = gridRef.current?.firstChild?.offsetHeight || 0;
     const rowGap = 25
     const containerHeight = gridRef.current?.parentElement?.offsetHeight || 0;
 
-    const scrollOffset = line * (lineHeight + rowGap) - containerHeight / 2 + lineHeight / 2;
+    const scrollOffset = line * (lineHeight + rowGap) - containerHeight / 2 + lineHeight / 2 + paddingTop;
 
     if (gridRef.current) {
       gridRef.current.style.transform = `translateY(-${scrollOffset}px)`;
     }
-  }, [typedIndex]);
+  }, [typedIndex, props.ruby]);
 
   return (
     <div className="typing-container">
