@@ -191,7 +191,7 @@ function TypingTest(props) {
       <div className="typing-grid" ref={gridRef}>
         {words.map((word, i) => (
           <span key={i} className={i < typedIndex ? "typed" : ""}>
-            {word}
+            {props.ruby ? rubify(word) : word}
           </span>
         ))}
       </div>
@@ -458,7 +458,7 @@ function App() {
             {
               [
                 <LessonUI lesson={lesson} next={lessonNextUp} comments={lessonComments} ruby={ruby} />, 
-                <TypingTest wordList={wordList} index={index} />, 
+                <TypingTest wordList={wordList} index={index} ruby={ruby} />, 
                 null
               ][page]
             }
