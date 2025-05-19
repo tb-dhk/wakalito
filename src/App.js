@@ -30,7 +30,7 @@ function keysToRads(str) {
 }
 
 function Suggestions(props) {
-  const possible = props.radicals && Object.keys(wakalitoDict)
+  const possible = Object.keys(wakalitoDict)
     .filter(a => a.toLowerCase().startsWith(props.radicals))
     .sort(); // <-- this sorts the keys alphabetically
 
@@ -128,30 +128,33 @@ function LessonUI(props) {
   const commentLines = props.comments.split("\n")
   return (
     <div>
-    <div className="comments">{
-      commentLines.map((line, idx) => (
-        <div key={idx}>
-        {line}
-        <br />
-        </div>
-      ))
-    }</div>
-    <br />
-    <div className="question">
-    {props.next ? (
-      props.lesson === 16 ? (
-        <>
-        󱥄󱥠󱤉󱥂󱥁󱦝 <span className="blue">{getDescriptionFromChar(props.next)}</span>
-        </>
+      <div className="comments">{
+        commentLines.map((line, idx) => (
+          <div key={idx}>
+          {line}
+          <br />
+          </div>
+        ))
+      }</div>
+      <br />
+      <div className="question">
+      {props.next ? (
+        props.lesson === 16 ? (
+          <>
+          󱥄󱥠󱤉󱥂󱥁󱦝 <span className="blue">{getDescriptionFromChar(props.next)}</span>
+          </>
+        ) : (
+          <>
+          󱥄󱥠󱤉󱥂「<span className="blue">{props.ruby ? rubify(props.next) : props.next}</span>」
+          </>
+        )
       ) : (
-        <>
-        󱥄󱥠󱤉󱥂「<span className="blue">{props.ruby ? rubify(props.next) : props.next}</span>」
-        </>
-      )
-    ) : (
-      "󱥞󱥵󱤀"
-    )}
-    </div>
+        "󱥞󱥵󱤀"
+      )}
+      </div>
+      <br />
+      <div className="comments">󱥞󱥡󱦖󱥔󱤂󱤡󱥄󱤭󱤉󱥀「↵」</div>
+      <br />
     </div>
   )
 }
@@ -220,7 +223,7 @@ function App() {
   if (!localStorage.getItem('lessonProgress')) {
     var dic = {}
     for (var l = 0; l < lessons.length; l++) {
-      dic[l] = [Array.from(lessons[l]), [], [], []]
+      dic[l] = [Array.from(lessons[l].filter(i => Boolean(i))), [], [], []]
     }
     localStorage.setItem('lessonProgress', JSON.stringify(dic))
   }
@@ -238,7 +241,7 @@ function App() {
 
   const [fade, setFade] = useState(true)
   const [ruby, setRuby] = useState(false)
-  const [qwerty, setQWERTY] = useState(false)
+  const [qwerty, setQWERTY] = useState(true)
 
   function incrementProg(character, increment) {
     setLessonProgress(prev => {
@@ -271,7 +274,7 @@ function App() {
         setLessonNextUp(possible[index])
       } else {
         setLessonNextUp(null)
-        setLessonComments("󱥞󱤖‍󱥡󱥐󱤉󱥂󱥁󱦜󱥄󱥨󱤉󱤟󱥂󱤆")
+        setLessonComments("󱥞󱤖‍󱥡󱥐󱤉󱥂󱥁󱦜󱥄󱥩󱤟󱥂󱤆")
       }
     }
   }, [page, questionsDone, lesson, lessonProgress])
@@ -319,13 +322,14 @@ function App() {
         switch (page) {
           case 0:
             if (lessonNextUp) {
+              console.log(lessonNextUp)
               if (character in wakalitoDict && wakalitoDict[character] === lessonNextUp) {
                 setLessonComments("󱥵󱤀 ")
                 incrementProg(lessonNextUp, 1) 
               } else {
                 const keys = Object.keys(wakalitoDict).filter(key => wakalitoDict[key] === lessonNextUp)
-                const rads = keys.map(key => `「${keysToRads(key)}」`).join("、")
-                setLessonComments(`󱤍󱤀󱦜󱥞󱥷󱥠󱤉󱥂「${lessonNextUp}」󱤡󱥄󱤭󱤉󱥀󱥁󱦝\n${rads}`)
+                const rads = keys.map(key => `「${keysToRads(key)}」`).join("󱤇")
+                setLessonComments(`󱤍󱤀󱦜󱥞󱤭󱤉󱥀「${keysToRads(character)}」\n󱥞󱥷󱥠󱤉󱥂「${lessonNextUp}」󱤡󱥄󱤭󱤉󱥀󱥁󱦝\n${rads}`)
               }
               setQuestionsDone(prev => prev + 1)
             }
@@ -352,7 +356,6 @@ function App() {
               setTextField(newTextField);
             } else if (character in wakalitoDict) {
               const newTextField = [...textField];
-              console.log(wakalitoDict)
               newTextField[page] += wakalitoDict[character];
               setTextField(newTextField);
 
@@ -423,9 +426,6 @@ function App() {
             )
           }
         </div>
-        <div className="title">
-          <div>󱥄󱤖󱥡󱤉󱤿󱥠󱦐󱥴󱦜󱤔󱦜󱤧󱦜󱥭󱦜󱦑</div>
-        </div>
         <div className="settings">
           {
             Object.values(settingsNames).map(
@@ -454,6 +454,7 @@ function App() {
                 null
               ][page]
             }
+            <br />
             <Text radicals={radicals[page]} lines={lines} />
             <br />
             <Keyboard pressed={heldKey} qwerty={qwerty} /> 
@@ -463,11 +464,11 @@ function App() {
               page === 1 && (
                 <div className="wpm">
                   <div>
-                    󱤄󱤡、︁󱥞󱥠󱤉󱥂
+                    󱤄󱤡󱥞󱥠󱤉
                     <span className="number">󱥂<span className="blue">{numbers(index)}</span></span>
                   </div>
                   <div>
-                    󱥫󱦂󱥳󱤡、︁󱥞󱥠󱤉󱥂
+                    󱥫󱥳󱥍󱦗󱥊󱥣󱦘󱤡󱥞󱥠󱤉
                     <span className="number">󱥂<span className="blue">{numbers(Math.round(wpm))}</span></span>
                   </div>
                 </div>
