@@ -152,7 +152,7 @@ function LessonUI(props) {
     {props.next ? (
       props.lesson === 16 ? (
         <>
-        󱥄󱥠󱤉󱥂󱥁󱦝 {getDescriptionFromChar(props.next)}
+        󱥄󱥠󱤉󱥂󱥁󱦝 <span className="blue">{getDescriptionFromChar(props.next)}</span>
         </>
       ) : (
         <>

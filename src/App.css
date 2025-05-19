@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Fairfax HD';
+  src: url('/FairfaxHD.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 * {
   font-family: Fairfax HD;
   color: #fff7d6;
@@ -293,6 +300,6 @@ rt {
   font-size: 50px
 }
 
-.blue {
-  color: #00c6be
+.blue, .blue > ruby, .blue > ruby > rt {
+  color: #00c6be !important
 }
