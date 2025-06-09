@@ -93,11 +93,11 @@ html, body, #root {
 .key {
   position: relative; /* required for absolute children */
   font-size: 30px;
+  background-color: #1f2637;
   border: 1.5px solid #fff7d6;
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 1;
 }
 
 .corner-label {
@@ -110,7 +110,6 @@ html, body, #root {
 
 .space {
   grid-column: 2 / 6;
-  aspect-ratio: 4;
 }
 
 .radicals {
@@ -129,11 +128,20 @@ html, body, #root {
   vertical-align: middle; /* align nicely with the span */
 }
 
+.ruby-center > ruby {
+  ruby-align: center !important;
+}
+
+ruby {
+  ruby-align: start;
+  margin: 0 2px
+}
+
 rt {
   font-size: 15px;
 }
 
-.pressed {
+.key.pressed, .key.pressed > span, .key:hover, .key:hover > span {
   color: #1f2637;
   background-color: #fff7d6;
 }

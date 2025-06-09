@@ -30,9 +30,15 @@ function keysToRads(str) {
 }
 
 function Suggestions(props) {
+  const kuliliList = "󱦡󱦠󱦣";
+
   const possible = Object.keys(wakalitoDict)
-    .filter(a => a.toLowerCase().startsWith(props.radicals))
-    .sort(); // <-- this sorts the keys alphabetically
+    .filter(a => {
+      const matchesRadicals = a.toLowerCase().startsWith(props.radicals);
+      const isInKuliliList = kuliliList.includes(wakalitoDict[a]);
+      return props.kulili ? matchesRadicals : (matchesRadicals && !isInKuliliList);
+    })
+    .sort();
 
   const ndict = Object.assign({}, wakalitoDict, wakalitoDesc)
 
@@ -61,9 +67,9 @@ function Lessons(props) {
               <div style={ind === props.lesson ? selectedStyle : {}}>{ind === 16 ? "󱥠󱤆" : text}</div>
             </div>
             <ProgressBar 
-              completed={getProgress(ind)} 
-              bgColor={progressColor(getProgress(ind))} 
-              customLabel={`󱥻${numbers(Math.floor(getProgress(ind)))}`}
+              completed={getProgress(ind)/getTotal(ind)*100} 
+              bgColor={progressColor(getProgress(ind)/getTotal(ind))} 
+              customLabel={`󱥻${numbers(getTotal(ind))}󱤡${numbers(getProgress(ind))}`}
               height="15px"
             />
           </div>
@@ -95,10 +101,19 @@ function Keyboard(props) {
             cornerName += " pressed"
           }
           return (
-            <div className={className}>
+            <button
+              className={className} 
+              onClick={() => {
+                props.setRadicals(prev => {
+                  let radicals = [...prev]
+                  radicals[props.page] += qwerty[ind]
+                  return radicals
+                })
+              }}
+            >
               {key}
               <span className={cornerName}>{ind < 17 && props.qwerty ? qwerty[ind] : ""}</span>
-            </div>
+            </button>
           )
         })
       }
@@ -120,12 +135,23 @@ function Text(props) {
 }
 
 function getDescriptionFromChar(char) {
-  const key = Object.keys(wakalitoDict).find(k => wakalitoDict[k] === char);
-  return key ? wakalitoDesc[key] : '';
+  // find the keybind (e.g., 'A1') that maps to this character
+  const keybind = Object.keys(wakalitoDict).find(key => wakalitoDict[key] === char);
+
+  // if that keybind exists in the description dictionary, return the description
+  return keybind && wakalitoDesc[keybind] ? wakalitoDesc[keybind] : char;
+}
+
+function isSpecial(word) {
+  if (!word || word === "「") {
+    return false
+  }
+  return word.startsWith("󱥐") || word.startsWith("󱥇") || word.startsWith("「");
 }
 
 function LessonUI(props) {
   const commentLines = props.comments.split("\n")
+  const desc = getDescriptionFromChar(props.next)
   return (
     <div>
       <div className="comments">{
@@ -139,13 +165,13 @@ function LessonUI(props) {
       <br />
       <div className="question">
       {props.next ? (
-        props.lesson === 16 ? (
+        isSpecial(desc) ? (
           <>
-          󱥄󱥠󱤉󱥂󱥁󱦝 <span className="blue">{getDescriptionFromChar(props.next)}</span>
+          󱥄󱥠󱤉󱥂󱥁󱦝<span className="blue ruby-center">{desc}</span>
           </>
         ) : (
           <>
-          󱥄󱥠󱤉󱥂「<span className="blue">{props.ruby ? rubify(props.next) : props.next}</span>」
+          󱥄󱥠󱤉󱥂「<span className="blue ruby-center">{props.ruby ? rubify(props.next) : props.next}</span>」
           </>
         )
       ) : (
@@ -183,7 +209,7 @@ function TypingTest(props) {
     <div className="typing-container">
       <div className="typing-grid" ref={gridRef}>
         {words.map((word, i) => (
-          <span key={i} className={i < typedIndex ? "typed" : ""}>
+          <span key={i} className={`${i < typedIndex ? 'typed' : ''} ruby-center`}>
             {props.ruby ? rubify(word) : word}
           </span>
         ))}
@@ -194,16 +220,18 @@ function TypingTest(props) {
 
 function getProgress(lesson) {
   const lessons = JSON.parse(localStorage.getItem('lessonProgress'))
-  const total = lessons[lesson].flat().length
-  const sum = lessons[lesson].map((ls, ind) => ls.length * ind).reduce((a, b) => a + b, 0)
-  const progress = sum / total / 3 * 100
-  return (progress === undefined ? 0 : progress)
+  return lessons[lesson].map((ls, ind) => ls.length * ind).reduce((a, b) => a + b, 0)
+}
+
+function getTotal(lesson) {
+  const lessons = JSON.parse(localStorage.getItem('lessonProgress'))
+  return lessons[lesson].flat().length * 3
 }
 
 function progressColor(progress) {
   const start = { r: 198, g: 0, b: 8 };     // #c60008
   const end = { r: 0, g: 198, b: 71 };      // #00c647
-  const t = Math.max(0, Math.min(1, progress / 100)); // Clamp between 0 and 1
+  const t = Math.max(0, Math.min(1, progress)); // Clamp between 0 and 1
 
   const r = Math.round(start.r + (end.r - start.r) * t);
   const g = Math.round(start.g + (end.g - start.g) * t);
@@ -223,7 +251,7 @@ function App() {
   if (!localStorage.getItem('lessonProgress')) {
     var dic = {}
     for (var l = 0; l < lessons.length; l++) {
-      dic[l] = [Array.from(lessons[l].filter(i => Boolean(i))), [], [], []]
+      dic[l] = [Array.from(lessons[l]), [], [], []]
     }
     localStorage.setItem('lessonProgress', JSON.stringify(dic))
   }
@@ -242,6 +270,7 @@ function App() {
   const [fade, setFade] = useState(true)
   const [ruby, setRuby] = useState(false)
   const [qwerty, setQWERTY] = useState(true)
+  const [kulili, setkulili] = useState(false)
 
   function incrementProg(character, increment) {
     setLessonProgress(prev => {
@@ -280,19 +309,28 @@ function App() {
   }, [page, questionsDone, lesson, lessonProgress])
 
   useEffect(() => {
+    console.log("kulili", kulili)
+    setWordList([])
+  }, [kulili])
+
+  useEffect(() => {
     if (page === 1) {
       setWordList(prev => {
         let newList = prev || [];
 
         while (newList.length < 50 + index) {
           const randomChar = words[Math.floor(Math.random() * words.length)];
-          newList.push(randomChar);
+          const kuliliList = "󱦡󱦠󱦣"
+
+          if (kulili || !kuliliList.includes(randomChar)) {
+            newList.push(randomChar)
+          }
         }
 
         return newList;
       });
     }
-  }, [page, index]);
+  }, [page, index, kulili]);
 
   useEffect(() => {
     localStorage.setItem('lessonProgress', JSON.stringify(lessonProgress))
@@ -322,14 +360,14 @@ function App() {
         switch (page) {
           case 0:
             if (lessonNextUp) {
-              console.log(lessonNextUp)
               if (character in wakalitoDict && wakalitoDict[character] === lessonNextUp) {
                 setLessonComments("󱥵󱤀 ")
                 incrementProg(lessonNextUp, 1) 
               } else {
                 const keys = Object.keys(wakalitoDict).filter(key => wakalitoDict[key] === lessonNextUp)
                 const rads = keys.map(key => `「${keysToRads(key)}」`).join("󱤇")
-                setLessonComments(`󱤍󱤀󱦜󱥞󱤭󱤉󱥀「${keysToRads(character)}」\n󱥞󱥷󱥠󱤉󱥂「${lessonNextUp}」󱤡󱥄󱤭󱤉󱥀󱥁󱦝\n${rads}`)
+                const thisChar = isSpecial(getDescriptionFromChar(lessonNextUp)) ? `󱥠󱥁󱤡󱦝${getDescriptionFromChar(lessonNextUp)}` : `󱥂「${lessonNextUp}」󱤡`
+                setLessonComments(`󱤍󱤀󱦜󱥞󱤭󱤉󱥀「${keysToRads(character)}」\n󱥞󱥷󱥠󱤉${thisChar}\n󱥄󱤭󱤉󱥀󱥁󱦝${rads}`)
               }
               setQuestionsDone(prev => prev + 1)
             }
@@ -408,6 +446,12 @@ function App() {
       func: setQWERTY,
       limit: 2,
       opt: "󱤴󱥷󱤮󱤉󱤿󱥠QWERTY"
+    },
+    kulili: {
+      vari: kulili,
+      func: setkulili,
+      limit: 2,
+      opt: "󱤴󱥷󱤮󱤉󱥂󱦈󱤨󱥹"
     }
   }
 
@@ -431,7 +475,7 @@ function App() {
             Object.values(settingsNames).map(
               obj => (
                 <div
-                  onClick={() => {obj.func((obj.vari + 1) % obj.limit)}}
+                  onClick={() => {obj.func(prev => ((prev + 1) % obj.limit))}}
                   style={obj.vari ? selectedStyle : {}}
                 >
                   {obj.opt}
@@ -444,7 +488,7 @@ function App() {
       <Fade in={fade}>
         <div className="body">
           <div className="left">
-            {page ? <Suggestions radicals={radicals[page]} ruby={ruby} /> : <Lessons lesson={lesson} setLesson={setLesson} />}
+            {page ? <Suggestions radicals={radicals[page]} ruby={ruby} kulili={kulili} /> : <Lessons lesson={lesson} setLesson={setLesson} />}
           </div>
           <div className="main">
             {
@@ -457,7 +501,7 @@ function App() {
             <br />
             <Text radicals={radicals[page]} lines={lines} />
             <br />
-            <Keyboard pressed={heldKey} qwerty={qwerty} /> 
+            <Keyboard pressed={heldKey} qwerty={qwerty} page={page} setRadicals={setRadicals} /> 
           </div>
           <div className="right">
             {

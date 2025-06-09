@@ -1,11 +1,11 @@
 export const wakalitoDict = {
-  "6Y": "　",
-  "G": "、︁",
-  "G3": "。︁",
-  "GG": "「",
-  "GG3": "」",
   "6": "󱦐",
   "Y": "󱦑",
+  "6Y": "　",
+  "G": "、︁",
+  "G3": "。",
+  "GG": "「",
+  "GG3": "」",
   "3": "󱦜",
   "A": "󱦝",
   "W2G": "󱥍󱦗",
@@ -288,10 +288,29 @@ export const wakalitoDict = {
   "RW33": "󱥴",
   "WEW": "󱥵",
   "FW": "󱥶",
-  "TT": "󱥷"
+  "TT": "󱥷",
+  "A5": ":(",
+  "A6": ":(",
+  "A1": ":)",
+  "AT": ":)",
+  "AY": ":)",
+  "A4": ":v",
+  "A2": ":|",
+  "AW": ":|",
+  "AR": ":>",
+  "A11": ":3",
+  "ATT": ":3",
+  "AYY": ":3",
+  "AW1": ":D",
+  "A2T": ":D",
+  "AWY": ":D",
+  "A2Q": ":P",
+  "AWQ": ":P"
 }
 
 export const wakalitoDesc = {
+  "6": "󱥇󱥍󱦗󱥂󱦘「󱦐󱦑」",
+  "Y": "󱥐󱥍󱦗󱥂󱦘「󱦐󱦑」",
   "W2G": "󱥇󱤩󱥍󱦗󱥂󱦘「󱥍󱦗󱤌󱤌󱦘」",
   "W23": "󱥐󱤩󱥍󱦗󱥂󱦘「󱥍󱦗󱤌󱤌󱦘」",
   "2RG": "󱥇󱤩󱥍󱦗󱥂󱦘「󱥩󱦗󱤌󱤌󱦘」",
@@ -468,24 +487,41 @@ export const lessons = [
   "󱥰󱤕󱦁󱤃󱤂󱥃󱤛󱥭",
   "󱤮󱤞󱥲󱥏󱤫󱤒󱤣",
   "󱤗󱤋󱤄󱤔󱥺󱤮󱥂󱥊󱦇󱥯󱤐",
-  "　、︁。︁「」󱦐󱦑󱦜󱦝",
-  "󱥍󱦘󱦗󱦗󱦘󱦘󱦚󱦚󱦛󱦛‍󱦖󱦖󱦖"
+  "　、︁。「」󱦜󱦝󱦐󱦑",
+  ["󱥍󱦗"].concat(Array.from("󱦗󱦗󱦘󱦘󱦚󱦚󱦛󱦛‍󱦖󱦖󱦖"))
 ]
 
 export function rubify(chars) {
-  return (
-    <>
-      {Array.from(chars).map((char, i) => {
-        const hex = char.codePointAt(0).toString(16);
-        return (
-          <ruby key={i}>
-            {char}
-            <rt>{codes[hex]}</rt>
-          </ruby>
-        );
-      })}
-    </>
-  );
+  const result = [];
+  let rubifyToggle = true;
+
+  Array.from(chars).forEach((char, i) => {
+    if (char === '「') {
+      rubifyToggle = false;
+      result.push(<span key={i}>{char}</span>);
+      return;
+    }
+
+    if (char === '」') {
+      rubifyToggle = true;
+      result.push(<span key={i}>{char}</span>);
+      return;
+    }
+
+    if (!rubifyToggle) {
+      result.push(<span key={i}>{char}</span>);
+    } else {
+      const hex = char.codePointAt(0).toString(16);
+      result.push(
+        <ruby key={i}>
+          {char}
+          <rt>{codes[hex]}</rt>
+        </ruby>
+      );
+    }
+  });
+
+  return <>{result}</>;
 }
 
 export function numbers(num, layer=0, ignore1=false) {
