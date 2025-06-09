@@ -563,8 +563,8 @@ function App() {
         textAlign: "center",
         padding: "2rem"
       }}>
-        󱤎󱤽󱥞󱤧󱤨󱦜󱥄󱤙󱤎󱤽󱥣<br />
-        your screen is too small, please use a bigger one
+        󱤎󱤽󱥞󱤧󱤨󱦜󱥄󱤙󱤎󱤽󱥣󱤇󱥩󱥜󱤉󱤎<br />
+        your screen is too small, please use a bigger one or rotate your device
       </div>
     );
   }
