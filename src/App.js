@@ -240,7 +240,7 @@ function progressColor(progress) {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-function App() {
+function Main(props) {
   const [heldKey, setHeldKey] = useState(null);
   const [radicals, setRadicals] = useState(["", "", ""]);
   const [textField, setTextField] = useState(["", "", ""]);
@@ -309,7 +309,6 @@ function App() {
   }, [page, questionsDone, lesson, lessonProgress])
 
   useEffect(() => {
-    console.log("kulili", kulili)
     setWordList([])
   }, [kulili])
 
@@ -538,6 +537,39 @@ function App() {
       </div>
     </div>
   );
+}
+
+function App() {
+  const [isScreenBigEnough, setIsScreenBigEnough] = useState(true);
+
+  useEffect(() => {
+    const checkSize = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const isBigEnough = w >= (4 / 3) * h || (w >= 1000 && h >= 1000);
+      setIsScreenBigEnough(isBigEnough);
+    };
+
+    checkSize(); // initial check
+    window.addEventListener("resize", checkSize); // respond to resizes
+
+    return () => window.removeEventListener("resize", checkSize);
+  }, []);
+
+  if (!isScreenBigEnough) {
+    return (
+      <div style={{
+        fontSize: "2rem",
+        textAlign: "center",
+        padding: "2rem"
+      }}>
+        󱤎󱤽󱥞󱤧󱤨󱦜󱥄󱤙󱤎󱤽󱥣<br />
+        your screen is too small, please use a bigger one
+      </div>
+    );
+  }
+
+  return <Main />;
 }
 
 export default App;
